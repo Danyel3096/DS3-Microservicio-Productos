@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer productId;
+    private Long id;
 
     @Size(min = 2, max = 20, message = "El tamaño tiene que estar entre 2 y 20")
     @Column(nullable = false)
@@ -40,6 +40,9 @@ public class Product {
     @Min(value = 0, message = "El stock no puede ser negativo")
     @Column(nullable = false)
     private Integer stock;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
 
     // Relación Many-to-One con Category
     // producto a categoria---- categoria muchos productos

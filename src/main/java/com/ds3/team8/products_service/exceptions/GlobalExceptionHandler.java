@@ -12,9 +12,21 @@ public class GlobalExceptionHandler {
         }
     }
 
+    public static class CategoryExistingException extends RuntimeException {
+        public CategoryExistingException(String name) {
+            super("La categoria con nombre '" + name + "' ya existe.");
+        }
+    }
+
     @ExceptionHandler(ProductExistingException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public String handleProductExistingException(ProductExistingException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(CategoryExistingException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleCategoryExistingException(CategoryExistingException ex) {
         return ex.getMessage();
     }
 }

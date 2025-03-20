@@ -20,12 +20,15 @@ import java.util.List;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer categoryId;
+    private Long id;
 
     @NotEmpty(message = "No puede estar vacio")
     @Size(min = 2, max = 20, message = "El tamaño tiene que estar entre 2 y 20")
     @Column(nullable = false, unique = true)
     private String name;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
