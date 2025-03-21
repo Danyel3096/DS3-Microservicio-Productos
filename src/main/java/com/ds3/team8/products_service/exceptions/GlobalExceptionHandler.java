@@ -1,32 +1,27 @@
 package com.ds3.team8.products_service.exceptions;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GlobalExceptionHandler {
-
-    public static class ProductExistingException extends RuntimeException {
-        public ProductExistingException(String name) {
-            super("El producto con nombre '" + name + "' ya existe.");
-        }
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleProductNotFoundException(ProductNotFoundException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("error", ex.getMessage());
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-    public static class CategoryExistingException extends RuntimeException {
-        public CategoryExistingException(String name) {
-            super("La categoria con nombre '" + name + "' ya existe.");
-        }
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleCategoryNotFoundException(CategoryNotFoundException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("error", ex.getMessage());
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(ProductExistingException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleProductExistingException(ProductExistingException ex) {
-        return ex.getMessage();
-    }
-
-    @ExceptionHandler(CategoryExistingException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleCategoryExistingException(CategoryExistingException ex) {
-        return ex.getMessage();
-    }
 }

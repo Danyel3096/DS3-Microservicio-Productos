@@ -1,28 +1,43 @@
 package com.ds3.team8.products_service.services;
 
+import com.ds3.team8.products_service.dtos.CategoryRequest;
+import com.ds3.team8.products_service.dtos.CategoryResponse;
 import com.ds3.team8.products_service.entities.Category;
-import com.ds3.team8.products_service.exceptions.GlobalExceptionHandler;
+import com.ds3.team8.products_service.exceptions.CategoryAlreadyExistsException;
 import com.ds3.team8.products_service.repositories.ICategoryRepository;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 @Service
+
 public class CategoryServiceImpl implements ICategoryService {
+    private ICategoryRepository categoryRepository;
 
-    ICategoryRepository categoryRepository;
-
-    @Autowired
     public CategoryServiceImpl(ICategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
 
-    @Override
-    @Transactional
-    public Category save(Category category) {
-        if (categoryRepository.findByName((category.getName())).isPresent()) {
-            throw new GlobalExceptionHandler.ProductExistingException(category.getName());
+    //Verificamos si la categoría ya existe en la base de datos
+    public CategoryResponse save(CategoryRequest categoryRequest) {
+
+        if (categoryRepository.findByName(categoryRequest.getName()).isPresent()) {
+            throw new CategoryAlreadyExistsException(categoryRequest.getName());
         }
-        return categoryRepository.save(category);
+        Category category = new Category();
+        category.setName(categoryRequest.getName());
+        category.setIs_active(true);
+
+        // Guardando
+        Category savedCategory = categoryRepository.save(category);
+        return convertToResponse(savedCategory);
+    }
+
+    private CategoryResponse convertToResponse(Category category) {
+        return new CategoryResponse(
+                category.getId(),
+                category.getName(),
+                category.getIs_active()
+        );
     }
 }
+

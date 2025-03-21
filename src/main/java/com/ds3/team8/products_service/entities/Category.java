@@ -3,17 +3,13 @@ package com.ds3.team8.products_service.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "categories")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 
@@ -22,13 +18,11 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "No puede estar vacio")
-    @Size(min = 2, max = 20, message = "El tamaño tiene que estar entre 2 y 20")
     @Column(nullable = false, unique = true)
     private String name;
 
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
+    private Boolean is_active = true;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
