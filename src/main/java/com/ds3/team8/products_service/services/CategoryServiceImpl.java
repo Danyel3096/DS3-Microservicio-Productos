@@ -4,9 +4,13 @@ import com.ds3.team8.products_service.dtos.CategoryRequest;
 import com.ds3.team8.products_service.dtos.CategoryResponse;
 import com.ds3.team8.products_service.entities.Category;
 import com.ds3.team8.products_service.exceptions.CategoryAlreadyExistsException;
+import com.ds3.team8.products_service.exceptions.CategoryNotFoundException;
 import com.ds3.team8.products_service.repositories.ICategoryRepository;
 
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 
@@ -17,7 +21,7 @@ public class CategoryServiceImpl implements ICategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    //Verificamos si la categoría ya existe en la base de datos
+    // Verificamos si la categoría ya existe en la base de datos
     public CategoryResponse save(CategoryRequest categoryRequest) {
 
         if (categoryRepository.findByName(categoryRequest.getName()).isPresent()) {
@@ -32,12 +36,59 @@ public class CategoryServiceImpl implements ICategoryService {
         return convertToResponse(savedCategory);
     }
 
+    @Override
+    public void delete(Long id) {
+        // Buscar la categoria en la base de datos
+        Category existingCategory = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
+
+        // Cambiar el estado a inactivo
+        existingCategory.setIs_active(false);
+
+        // Guardar los cambios en la base de datos
+        categoryRepository.save(existingCategory);
+    }
+
+    @Override
+    public CategoryResponse findById(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
+
+        return convertToResponse(category);
+    }
+
+    @Override
+    public CategoryResponse update(Long id, CategoryRequest categoryRequest) {
+        // Buscar la categoría existente
+        Category existingCategory = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
+
+        // Verificar si el nuevo nombre ya está en uso por otra categoría
+        Optional<Category> categoryWithSameName = categoryRepository.findByName(categoryRequest.getName());
+        if (categoryWithSameName.isPresent() && !categoryWithSameName.get().getId().equals(id)) {
+            throw new CategoryAlreadyExistsException(categoryRequest.getName());
+        }
+
+        // Actualizar los datos de la categoría
+        existingCategory.setName(categoryRequest.getName());
+
+        // Guardar cambios en la base de datos
+        Category updatedCategory = categoryRepository.save(existingCategory);
+        return convertToResponse(updatedCategory);
+    }
+
+    @Override
+    public List<CategoryResponse> findAll() {
+        return categoryRepository.findAll()
+                .stream()
+                .map(this::convertToResponse)
+                .toList();
+    }
+
     private CategoryResponse convertToResponse(Category category) {
         return new CategoryResponse(
                 category.getId(),
                 category.getName(),
-                category.getIs_active()
-        );
+                category.getIs_active());
     }
 }
-
