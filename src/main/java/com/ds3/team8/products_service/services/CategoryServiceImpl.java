@@ -29,7 +29,7 @@ public class CategoryServiceImpl implements ICategoryService {
         }
         Category category = new Category();
         category.setName(categoryRequest.getName());
-        category.setIs_active(true);
+        category.setIsActive(true);
 
         // Guardando
         Category savedCategory = categoryRepository.save(category);
@@ -43,7 +43,7 @@ public class CategoryServiceImpl implements ICategoryService {
                 .orElseThrow(() -> new CategoryNotFoundException(id));
 
         // Cambiar el estado a inactivo
-        existingCategory.setIs_active(false);
+        existingCategory.setIsActive(false);
 
         // Guardar los cambios en la base de datos
         categoryRepository.save(existingCategory);
@@ -89,6 +89,6 @@ public class CategoryServiceImpl implements ICategoryService {
         return new CategoryResponse(
                 category.getId(),
                 category.getName(),
-                category.getIs_active());
+                category.getIsActive());
     }
 }
