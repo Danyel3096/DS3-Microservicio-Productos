@@ -16,4 +16,5 @@ public interface ICategoryService {
     CategoryResponse update(Long id, CategoryRequest categoryRequest);
 
     List<CategoryResponse> findAll();
+
 }

@@ -20,6 +20,7 @@ import java.util.Optional;
 
 public class CategoryServiceImpl implements ICategoryService {
     private ICategoryRepository categoryRepository;
+
     public CategoryServiceImpl(ICategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
