@@ -4,19 +4,22 @@ import com.ds3.team8.products_service.dtos.CategoryRequest;
 import com.ds3.team8.products_service.dtos.CategoryResponse;
 import com.ds3.team8.products_service.entities.Category;
 import com.ds3.team8.products_service.exceptions.CategoryAlreadyExistsException;
+import com.ds3.team8.products_service.exceptions.CategoryDeletionException;
 import com.ds3.team8.products_service.exceptions.CategoryNotFoundException;
 import com.ds3.team8.products_service.repositories.ICategoryRepository;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 
 public class CategoryServiceImpl implements ICategoryService {
     private ICategoryRepository categoryRepository;
-
     public CategoryServiceImpl(ICategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
@@ -41,7 +44,10 @@ public class CategoryServiceImpl implements ICategoryService {
         // Buscar la categoria en la base de datos
         Category existingCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
-
+// Verificar si tiene productos asociados
+        if (!existingCategory.getProducts().isEmpty()) {
+            throw new CategoryDeletionException(id);
+        }
         // Cambiar el estado a inactivo
         existingCategory.setIsActive(false);
 
@@ -79,7 +85,7 @@ public class CategoryServiceImpl implements ICategoryService {
 
     @Override
     public List<CategoryResponse> findAll() {
-        return categoryRepository.findAll()
+        return categoryRepository.findByIsActiveTrue()
                 .stream()
                 .map(this::convertToResponse)
                 .toList();
