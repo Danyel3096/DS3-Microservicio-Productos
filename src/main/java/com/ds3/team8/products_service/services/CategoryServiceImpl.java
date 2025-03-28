@@ -7,19 +7,14 @@ import com.ds3.team8.products_service.exceptions.CategoryAlreadyExistsException;
 import com.ds3.team8.products_service.exceptions.CategoryDeletionException;
 import com.ds3.team8.products_service.exceptions.CategoryNotFoundException;
 import com.ds3.team8.products_service.repositories.ICategoryRepository;
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
-
 public class CategoryServiceImpl implements ICategoryService {
-    private ICategoryRepository categoryRepository;
+    private final ICategoryRepository categoryRepository;
 
     public CategoryServiceImpl(ICategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
