@@ -73,7 +73,7 @@ public class CategoryControllerTest {
         verify(categoryService, times(1)).findAll();
     }
 
-    // comportamiento del endpoint GET /api/v1/categories/1 en  ategoría.
+    // comportamiento del endpoint GET /api/v1/categories/1 en categoría.
     @Test
     void testGetCategoryById() throws Exception {
         CategoryResponse category = new CategoryResponse(1L, "Books", true);
@@ -108,7 +108,7 @@ public class CategoryControllerTest {
         verify(categoryService, times(1)).save(any(CategoryRequest.class));
     }
 
-    // verificar el comportamiento del endpoint POST /api/v1/categories,
+    // verificar el comportamiento del endpoint PUT /api/v1/categories,
     // que se encarga de actualizar una nueva categoría.
     @Test
     void testUpdateCategory() throws Exception {
@@ -127,7 +127,7 @@ public class CategoryControllerTest {
         verify(categoryService, times(1)).update(eq(1L), any(CategoryRequest.class));
     }
 
-    // verificar el comportamiento del endpoint POST /api/v1/categories,
+    // verificar el comportamiento del endpoint DELETE /api/v1/categories,
     // que se encarga de eliminar una nueva categoría.
     @Test
     void testDeleteCategory() throws Exception {
