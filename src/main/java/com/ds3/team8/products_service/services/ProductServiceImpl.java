@@ -11,6 +11,8 @@ import com.ds3.team8.products_service.repositories.IProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 
@@ -25,6 +27,7 @@ public class ProductServiceImpl implements IProductService {
         this.categoryRepository = categoryRepository;
     }
 
+    @Transactional  // Modifica la base de datos
     @Override
     public ProductResponse save(ProductRequest productRequest) {
         // verificar la categoría exista y esté activa
@@ -45,6 +48,7 @@ public class ProductServiceImpl implements IProductService {
         return convertToResponse(savedProduct);
     }
 
+    @Transactional  // Modifica la base de datos
     @Override
     public void delete(Long id) {
         // Buscar el producto en la base de datos
@@ -58,6 +62,7 @@ public class ProductServiceImpl implements IProductService {
         productRepository.save(existingProduct);
     }
 
+    @Transactional  // Modifica la base de datos
     @Override
     public ProductResponse update(Long id, ProductRequest productRequest) {
         // Validar que el producto exista
@@ -80,6 +85,7 @@ public class ProductServiceImpl implements IProductService {
         return convertToResponse(updatedProduct);
     }
 
+    @Transactional(readOnly = true)  // Solo lectura
     @Override
     public ProductResponse findById(Long id) {
         Product product = productRepository.findById(id)
@@ -88,6 +94,7 @@ public class ProductServiceImpl implements IProductService {
         return convertToResponse(product);
     }
 
+    @Transactional(readOnly = true)  // Solo lectura
     @Override
     public List<ProductResponse> findAll() {
         return productRepository.findAll()
@@ -96,6 +103,7 @@ public class ProductServiceImpl implements IProductService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)  // Solo lectura
     @Override
     public Page<ProductResponse> findAll(Pageable pageable) {
         return productRepository.findAll(pageable)

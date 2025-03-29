@@ -8,6 +8,7 @@ import com.ds3.team8.products_service.exceptions.CategoryDeletionException;
 import com.ds3.team8.products_service.exceptions.CategoryNotFoundException;
 import com.ds3.team8.products_service.repositories.ICategoryRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,7 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     // Verificamos si la categoría ya existe en la base de datos
+    @Transactional // Modifica la base de datos
     public CategoryResponse save(CategoryRequest categoryRequest) {
 
         if (categoryRepository.findByName(categoryRequest.getName()).isPresent()) {
@@ -35,6 +37,7 @@ public class CategoryServiceImpl implements ICategoryService {
         return convertToResponse(savedCategory);
     }
 
+    @Transactional  // Modifica la base de datos
     @Override
     public void delete(Long id) {
         // Buscar la categoria en la base de datos
@@ -51,6 +54,7 @@ public class CategoryServiceImpl implements ICategoryService {
         categoryRepository.save(existingCategory);
     }
 
+    @Transactional(readOnly = true)  // Solo lectura
     @Override
     public CategoryResponse findById(Long id) {
         Category category = categoryRepository.findById(id)
@@ -59,6 +63,7 @@ public class CategoryServiceImpl implements ICategoryService {
         return convertToResponse(category);
     }
 
+    @Transactional  // Modifica la base de datos
     @Override
     public CategoryResponse update(Long id, CategoryRequest categoryRequest) {
         // Buscar la categoría existente
@@ -79,6 +84,7 @@ public class CategoryServiceImpl implements ICategoryService {
         return convertToResponse(updatedCategory);
     }
 
+    @Transactional(readOnly = true)  // Solo lectura
     @Override
     public List<CategoryResponse> findAll() {
         return categoryRepository.findByIsActiveTrue()
