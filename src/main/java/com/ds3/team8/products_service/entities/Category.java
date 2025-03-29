@@ -22,7 +22,7 @@ public class Category {
     private String name;
 
     @Column(name = "is_active", nullable = false)
-    private Boolean IsActive = true;
+    private Boolean isActive = true;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
