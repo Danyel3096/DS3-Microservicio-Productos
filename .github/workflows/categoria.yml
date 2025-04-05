@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev-joan-saavedra
+  workflow_dispatch: # Para poder ejecutarlo manualmente también
 
 jobs:
   test:
@@ -17,6 +18,7 @@ jobs:
         run: chmod +x mvnw
 
       - name: Ejecutar tests de categoría
-        run: ./mvnw -Dtest=*Category* test
+        run: ./mvnw test -Dtest=*Category*
+
 
 
