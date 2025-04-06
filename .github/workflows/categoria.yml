@@ -25,9 +25,10 @@ jobs:
 
       - name: Run tests in repositories folder
         run: |
-          find src/test -type f -path "*repositories*" -name "*Test.java" > tests-to-run.txt
+          find src/test/java -type f -path "*repositories*" -name "*Test.java" > tests-to-run.txt
           if [ -s tests-to-run.txt ]; then
-            mvn -Dtest=$(paste -sd, tests-to-run.txt | sed 's|src/test/java/||g;s|/|.|g;s|.java||g') test
+            test_classes=$(cat tests-to-run.txt | sed 's|src/test/java/||g;s|/|.|g;s|.java||g')
+            mvn -Dtest=$(echo $test_classes | paste -sd,) test
           else
             echo "No repository tests found."
 
