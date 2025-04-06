@@ -3,10 +3,10 @@ name: Repository Tests
 on:
   push:
     branches:
-      - main
+      - dev-joan-saavedra
   pull_request:
     branches:
-      - main
+      - dev-joan-saavedra
 
 jobs:
   test-repositories:
@@ -30,5 +30,4 @@ jobs:
             mvn -Dtest=$(paste -sd, tests-to-run.txt | sed 's|src/test/java/||g;s|/|.|g;s|.java||g') test
           else
             echo "No repository tests found."
-          fi
 
