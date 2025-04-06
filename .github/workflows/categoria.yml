@@ -17,8 +17,7 @@ jobs:
       - name: Dar permisos a mvnw
         run: chmod +x mvnw
 
-      - name: Ejecutar tests de categoría
-        run: ./mvnw test -Dtest=*Category*
-
+      - name: Ejecutar tests
+        run: ./mvnw test
 
 
