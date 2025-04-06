@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ActiveProfiles("test") // Usa el archivo de configuración de test
 public class lCategoryRepositoryTest {
     @Autowired
     private ICategoryRepository categoryRepository;

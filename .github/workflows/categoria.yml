@@ -1,23 +1,34 @@
-name: Test categoría
+name: Repository Tests
 
 on:
   push:
     branches:
-      - dev-joan-saavedra
-  workflow_dispatch:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  test:
+  test-repositories:
+    name: Run Repository Tests Only
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout del repositorio
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Dar permisos a mvnw
-        run: chmod +x mvnw
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Ejecutar tests (excluyendo carpeta repositories)
-        run: ./mvnw test -DexcludedTests=**/repositories/**
-
+      - name: Run tests in repositories folder
+        run: |
+          find src/test -type f -path "*repositories*" -name "*Test.java" > tests-to-run.txt
+          if [ -s tests-to-run.txt ]; then
+            mvn -Dtest=$(paste -sd, tests-to-run.txt | sed 's|src/test/java/||g;s|/|.|g;s|.java||g') test
+          else
+            echo "No repository tests found."
+          fi
 
