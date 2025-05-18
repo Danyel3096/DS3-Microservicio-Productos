@@ -25,7 +25,7 @@ public class CategoryServiceImpl implements ICategoryService {
     @Transactional // Modifica la base de datos
     public CategoryResponse save(CategoryRequest categoryRequest) {
 
-        if (categoryRedepository.findByName(categoryRequest.getName()).isPresent()) {
+        if (categoryRepository.findByName(categoryRequest.getName()).isPresent()) {
             throw new CategoryAlreadyExistsException(categoryRequest.getName());
         }
         Category category = new Category();
