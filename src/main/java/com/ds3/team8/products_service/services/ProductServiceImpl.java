@@ -5,6 +5,7 @@ import com.ds3.team8.products_service.dtos.ProductResponse;
 import com.ds3.team8.products_service.entities.Category;
 import com.ds3.team8.products_service.entities.Product;
 import com.ds3.team8.products_service.exceptions.CategoryNotFoundException;
+import com.ds3.team8.products_service.exceptions.InvalidImageException;
 import com.ds3.team8.products_service.exceptions.ProductNotFoundException;
 import com.ds3.team8.products_service.repositories.ICategoryRepository;
 import com.ds3.team8.products_service.repositories.IProductRepository;
@@ -35,6 +36,11 @@ public class ProductServiceImpl implements IProductService {
                 .filter(Category::getIsActive)
                 .orElseThrow(() -> new CategoryNotFoundException(productRequest.getCategoryId()));
 
+        // Validar la URL de la imagen
+        if (productRequest.getImageUrl() == null || productRequest.getImageUrl().isBlank()) {
+            throw new InvalidImageException("La URL de la imagen no puede estar vacía.");
+        }
+
         Product product = new Product();
         product.setName(productRequest.getName());
         product.setDescription(productRequest.getDescription());
@@ -42,6 +48,7 @@ public class ProductServiceImpl implements IProductService {
         product.setStock(productRequest.getStock());
         product.setIsActive(true);
         product.setCategory(category);
+        product.setImageUrl(productRequest.getImageUrl());
 
         // Guardando
         Product savedProduct = productRepository.save(product);
@@ -80,6 +87,7 @@ public class ProductServiceImpl implements IProductService {
         existingProduct.setPrice(productRequest.getPrice());
         existingProduct.setStock(productRequest.getStock());
         existingProduct.setCategory(category);
+        existingProduct.setImageUrl(productRequest.getImageUrl());
 
         Product updatedProduct = productRepository.save(existingProduct);
         return convertToResponse(updatedProduct);
@@ -118,7 +126,8 @@ public class ProductServiceImpl implements IProductService {
                 product.getPrice(),
                 product.getStock(),
                 product.getIsActive(),
-                product.getCategory().getId()
+                product.getCategory().getId(),
+                product.getImageUrl()
         );
     }
 

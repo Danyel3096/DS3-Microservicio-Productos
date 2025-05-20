@@ -35,4 +35,8 @@ public class ProductRequest {
 
     @NotNull(message = "La categoria no puede ser nulo")
     private Long categoryId;
+
+    @NotEmpty(message = "La URL de la imagen no puede estar vacía")
+    private String imageUrl;
+
 }

@@ -19,4 +19,6 @@ public class ProductResponse {
     private Integer stock;
     private Boolean isActive;
     private Long categoryId;
+    // agregando la imagen
+    private String imageUrl;
 }
