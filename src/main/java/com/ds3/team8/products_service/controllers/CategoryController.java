@@ -4,9 +4,16 @@ import com.ds3.team8.products_service.dtos.CategoryRequest;
 import com.ds3.team8.products_service.dtos.CategoryResponse;
 import com.ds3.team8.products_service.services.ICategoryService;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -14,53 +21,41 @@ import java.util.List;
 @RequestMapping("/api/v1/categories")
 public class CategoryController {
 
-    private final ICategoryService categoryService;
+    private ICategoryService categoryService;
 
     public CategoryController(ICategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
-    /**
-     * Retrieve all categories.
-     */
+    // Obtener todas las categorías
     @GetMapping
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
-        List<CategoryResponse> categories = categoryService.findAll();
-        return ResponseEntity.ok(categories);
+        return ResponseEntity.ok(categoryService.findAll());
     }
 
-    /**
-     * Retrieve a category by its ID.
-     */
+    // Obtener una categoría por ID
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
-        CategoryResponse category = categoryService.findById(id);
-        return ResponseEntity.ok(category);
+        return ResponseEntity.ok(categoryService.findById(id));
     }
 
-    /**
-     * Create a new category.
-     */
+    // Crear una nueva categoría
     @PostMapping
-    public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
-        CategoryResponse createdCategory = categoryService.save(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
+    public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
+        CategoryResponse savedCategory = categoryService.save(categoryRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
     }
 
-    /**
-     * Update an existing category by its ID.
-     */
+    // Actualizar una categoría existente
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponse> updateCategory(
             @PathVariable Long id,
-            @Valid @RequestBody CategoryRequest request) {
-        CategoryResponse updatedCategory = categoryService.update(id, request);
+            @Valid @RequestBody CategoryRequest categoryRequest) {
+        CategoryResponse updatedCategory = categoryService.update(id, categoryRequest);
         return ResponseEntity.ok(updatedCategory);
     }
 
-    /**
-     * Soft delete a category by its ID.
-     */
+    // Eliminación lógica de una categoría
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.delete(id);

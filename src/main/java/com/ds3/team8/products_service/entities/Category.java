@@ -1,21 +1,19 @@
 package com.ds3.team8.products_service.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.List;
 
-/**
- * Entity representing a product category.
- */
+@Data
 @Entity
 @Table(name = "categories")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Category {
 
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

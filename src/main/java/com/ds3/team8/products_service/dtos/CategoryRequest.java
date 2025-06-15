@@ -7,16 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * DTO for receiving category creation or update requests.
- */
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class CategoryRequest {
-
-    @NotEmpty(message = "El nombre no puede estar vacío.")
-    @Size(min = 2, max = 20, message = "El nombre debe tener entre 2 y 20 caracteres.")
+    @NotEmpty(message = "No puede estar vacio")
+    @Size(min = 2, max = 20, message = "El tamaño tiene que estar entre 2 y 20")
     private String name;
 }

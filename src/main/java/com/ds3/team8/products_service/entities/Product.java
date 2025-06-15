@@ -5,17 +5,13 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-/**
- * Entity representing a product.
- */
 @Entity
 @Table(name = "products")
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-public class Product {
+@NoArgsConstructor
 
+public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,10 +31,9 @@ public class Product {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
-    /**
-     * Many-to-one relationship with Category.
-     */
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    // Relación Many-to-One con Category
+    // producto a categoria---- categoria muchos productos
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 }
