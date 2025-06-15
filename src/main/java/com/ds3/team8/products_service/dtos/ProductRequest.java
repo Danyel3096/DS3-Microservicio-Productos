@@ -15,7 +15,9 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
+/**
+ * DTO for receiving product creation or update requests.
+ */
 public class ProductRequest {
     @NotEmpty(message = "No puede estar vacio")
     @Size(min = 2, max = 20, message = "El tamaño tiene que estar entre 2 y 20")

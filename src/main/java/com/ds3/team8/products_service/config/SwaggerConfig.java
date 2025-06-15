@@ -14,6 +14,7 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("Microservicio de productos") // Título de la API
                         .version("1.0.0") // Versión de la API
-                        .description("Documentación de la API del microservicio de productos")); // Descripción de la API
+                        .description("Documentación de la API del microservicio de productos")); // Descripción de la
+                                                                                                 // API
     }
 }
