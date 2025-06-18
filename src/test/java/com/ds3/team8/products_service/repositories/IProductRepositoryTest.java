@@ -96,4 +96,23 @@ public class IProductRepositoryTest {
         // Verificar que se guardaron 2 productos
         assertEquals(2, products.size());
     }
+
+    @Test
+    void testFindByIsActiveTrue() {
+        productRepository.save(new Product(null, "Activo", "Producto activo", BigDecimal.TEN, 10, true, category));
+        productRepository.save(new Product(null, "Inactivo", "Producto inactivo", BigDecimal.TEN, 10, false, category));
+
+        List<Product> result = productRepository.findByIsActiveTrue();
+        assertEquals(1, result.size());
+        assertEquals("Activo", result.get(0).getName());
+    }
+
+    @Test
+    void testFindByName() {
+        productRepository.save(new Product(null, "Coca Cola", "Refresco", BigDecimal.valueOf(2000), 100, true, category));
+
+        Optional<Product> result = productRepository.findByName("Coca Cola");
+        assertTrue(result.isPresent());
+        assertEquals("Coca Cola", result.get().getName());
+    }
 }
