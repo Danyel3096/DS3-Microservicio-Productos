@@ -50,6 +50,28 @@ public class IProductRepositoryTest {
     }
 
     @Test
+    void testUpdateProduct() {
+        Product product = productRepository.save(new Product(null, "Té", "Té verde", BigDecimal.valueOf(3000.0), 50, true, category));
+
+        product.setPrice(BigDecimal.valueOf(3500.0));
+        product.setStock(70);
+        Product updated = productRepository.save(product);
+
+        assertEquals(BigDecimal.valueOf(3500.0), updated.getPrice());
+        assertEquals(70, updated.getStock());
+    }
+
+    @Test
+    void testDeleteProduct() {
+        Product product = productRepository.save(new Product(null, "Jugo", "Jugo de naranja", BigDecimal.valueOf(2500.0), 80, true, category));
+
+        productRepository.delete(product);
+        Optional<Product> deleted = productRepository.findById(product.getId());
+
+        assertFalse(deleted.isPresent());
+    }
+
+    @Test
     void testFindById() {
         // Guardar un producto
         Product product = productRepository.save(new Product(null, "Alcohol", "Alcohol colombiano", BigDecimal.valueOf(6000.0), 120, true, category));
