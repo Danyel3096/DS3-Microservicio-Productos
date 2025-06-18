@@ -119,6 +119,19 @@ public class ProductControllerTest {
         verify(productService, times(1)).save(any(ProductRequest.class));
     }
 
+    /**
+     * Verifica que crear un producto con datos inválidos retorna un estado Bad Request (400).
+     */
+    @Test
+    void testCreateProduct_InvalidRequest() throws Exception {
+        ProductRequest invalidRequest = new ProductRequest("", "desc", BigDecimal.TEN, 5, 1L);
+
+        mockMvc.perform(post("/api/v1/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
     // verificar el comportamiento del endpoint PUT /api/v1/products,
     // que se encarga de actualizar un nuevo producto.
     @Test
