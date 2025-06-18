@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -81,6 +83,21 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.price").value(600.00));
 
         verify(productService, times(1)).findById(1L);
+    }
+
+    /**
+     * Prueba el escenario donde un producto con el ID especificado no existe.
+     * Simula que el productService lanza una RuntimeException al buscar un ID de producto inexistente (99L).
+     */
+    @Test
+    void testGetProductById_NotFound() throws Exception {
+        when(productService.findById(99L)).thenThrow(new RuntimeException("Producto no encontrado"));
+
+        mockMvc.perform(get("/api/v1/products/99"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Producto no encontrado"));
+
+        verify(productService, times(1)).findById(99L);
     }
 
     // verificar el comportamiento del endpoint POST /api/v1/products,
