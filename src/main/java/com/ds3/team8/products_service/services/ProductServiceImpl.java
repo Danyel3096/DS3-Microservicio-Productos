@@ -1,5 +1,6 @@
 package com.ds3.team8.products_service.services;
 
+import com.ds3.team8.products_service.exceptions.BadRequestException;
 import com.ds3.team8.products_service.exceptions.NotFoundException;
 import com.ds3.team8.products_service.dtos.StockRequest;
 import com.ds3.team8.products_service.client.OrderItemClient;
