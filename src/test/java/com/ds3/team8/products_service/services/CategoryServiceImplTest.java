@@ -7,8 +7,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.ds3.team8.products_service.dtos.CategoryRequest;
 import com.ds3.team8.products_service.dtos.CategoryResponse;
 import com.ds3.team8.products_service.entities.Category;
-import com.ds3.team8.products_service.exceptions.CategoryAlreadyExistsException;
-import com.ds3.team8.products_service.exceptions.CategoryNotFoundException;
+import com.ds3.team8.products_service.exceptions.AccessDeniedException;
+import com.ds3.team8.products_service.exceptions.NotFoundException;
 import com.ds3.team8.products_service.repositories.ICategoryRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,7 +61,7 @@ public class CategoryServiceImplTest {
         when(categoryRepository.findByName(request.getName())).thenReturn(Optional.of(new Category()));
 
         assertThatThrownBy(() -> categoryService.save(request))
-                .isInstanceOf(CategoryAlreadyExistsException.class);
+                .isInstanceOf(AccessDeniedException.class);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class CategoryServiceImplTest {
     void testFindById_NotFound() {
         when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
         assertThatThrownBy(() -> categoryService.findById(1L))
-                .isInstanceOf(CategoryNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test

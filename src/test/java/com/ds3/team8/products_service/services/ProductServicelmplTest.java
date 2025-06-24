@@ -8,8 +8,8 @@ import com.ds3.team8.products_service.dtos.ProductRequest;
 import com.ds3.team8.products_service.dtos.ProductResponse;
 import com.ds3.team8.products_service.entities.Category;
 import com.ds3.team8.products_service.entities.Product;
-import com.ds3.team8.products_service.exceptions.CategoryNotFoundException;
-import com.ds3.team8.products_service.exceptions.ProductNotFoundException;
+import com.ds3.team8.products_service.exceptions.NotFoundException;
+import com.ds3.team8.products_service.exceptions.UnauthorizedException;
 import com.ds3.team8.products_service.repositories.ICategoryRepository;
 import com.ds3.team8.products_service.repositories.IProductRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -70,7 +70,7 @@ public class ProductServicelmplTest {
         when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> productService.save(request))
-                .isInstanceOf(CategoryNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -90,6 +90,6 @@ public class ProductServicelmplTest {
     void testFindById_NotFound() {
         when(productRepository.findById(1L)).thenReturn(Optional.empty());
         assertThatThrownBy(() -> productService.findById(1L))
-                .isInstanceOf(ProductNotFoundException.class);
+                .isInstanceOf(UnauthorizedException.class);
     }
 }

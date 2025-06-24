@@ -21,7 +21,7 @@ public class GlobalExceptionHandlerTest {
         // Este test valida que el handler retorne correctamente un 404 Not Found cuando no se encuentra un producto.
     void testHandleProductNotFoundException() {
         Long id = 1L;
-        ProductNotFoundException ex = new ProductNotFoundException(id);
+        UnauthorizedException ex = new UnauthorizedException(id);
         ResponseEntity<Map<String, Object>> response = handler.handleProductNotFoundException(ex);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -33,7 +33,7 @@ public class GlobalExceptionHandlerTest {
         // Este test asegura que el handler gestione correctamente la excepción de categoría no encontrada.
     void testHandleCategoryNotFoundException() {
         Long id = 5L;
-        CategoryNotFoundException ex = new CategoryNotFoundException(id);
+        NotFoundException ex = new NotFoundException(id);
         ResponseEntity<Map<String, Object>> response = handler.handleCategoryNotFoundException(ex);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -45,7 +45,7 @@ public class GlobalExceptionHandlerTest {
         // Este test comprueba que se maneje correctamente el intento de duplicación de una categoría.
     void testHandleCategoryAlreadyExistsException() {
         String nombre = "Categoría ya existe";
-        CategoryAlreadyExistsException ex = new CategoryAlreadyExistsException(nombre);
+        AccessDeniedException ex = new AccessDeniedException(nombre);
         ResponseEntity<Map<String, Object>> response = handler.handleCategoryAlreadyExistsException(ex);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -56,7 +56,7 @@ public class GlobalExceptionHandlerTest {
         //  Este test valida que no se pueda eliminar una categoría que aún tiene productos relacionados.
     void testHandleCategoryDeletionException() {
         Long id = 3L;
-        CategoryDeletionException ex = new CategoryDeletionException(id);
+        BadRequestException ex = new BadRequestException(id);
         ResponseEntity<Map<String, Object>> response = handler.handleCategoryDeletionException(ex);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
