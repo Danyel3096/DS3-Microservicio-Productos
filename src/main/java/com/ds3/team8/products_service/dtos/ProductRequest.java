@@ -15,28 +15,24 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class ProductRequest {
-    @NotEmpty(message = "No puede estar vacio")
-    @Size(min = 2, max = 20, message = "El tamaño tiene que estar entre 2 y 20")
+    @NotEmpty(message = "El campo 'name' es obligatorio")
+    @Size(min = 2, max = 20, message = "El campo 'name' debe tener entre 2 y 20 caracteres")
     private String name;
 
-    @NotEmpty(message = "No puede estar vacio")
-    @Size(max = 255, message = "La descripción no puede tener más de 255 caracteres")
+    @NotEmpty(message = "El campo 'description' es obligatorio")
+    @Size(max = 255, message = "El campo 'description' no puede exceder los 255 caracteres")
     private String description;
 
-    @NotNull(message = "El precio es obligatorio")
-    @Min(value = 0, message = "El precio no puede ser negativo")
+    @NotNull(message = "El campo 'price' es obligatorio")
+    @Min(value = 0, message = "El campo 'price' no puede ser negativo")
     private BigDecimal price;
 
-    @NotNull(message = "El stock no puede ser nulo")
-    @Min(value = 0, message = "El stock no puede ser negativo")
+    @NotNull(message = "El campo 'stock' es obligatorio")
+    @Min(value = 0, message = "El campo 'stock' no puede ser negativo")
     private Integer stock;
 
-    @NotNull(message = "La categoria no puede ser nulo")
+    @NotNull(message = "El campo 'categoryId' es obligatorio")
     private Long categoryId;
-
-    @NotEmpty(message = "La URL de la imagen no puede estar vacía")
-    private String imageUrl;
-
 }
+
