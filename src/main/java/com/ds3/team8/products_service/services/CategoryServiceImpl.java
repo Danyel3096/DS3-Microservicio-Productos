@@ -1,12 +1,16 @@
 package com.ds3.team8.products_service.services;
 
+import com.ds3.team8.products_service.exceptions.NotFoundException;
 import com.ds3.team8.products_service.dtos.CategoryRequest;
 import com.ds3.team8.products_service.dtos.CategoryResponse;
 import com.ds3.team8.products_service.entities.Category;
-import com.ds3.team8.products_service.exceptions.CategoryAlreadyExistsException;
-import com.ds3.team8.products_service.exceptions.CategoryDeletionException;
-import com.ds3.team8.products_service.exceptions.CategoryNotFoundException;
+import com.ds3.team8.products_service.mappers.CategoryMapper;
 import com.ds3.team8.products_service.repositories.ICategoryRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,87 +20,111 @@ import java.util.Optional;
 @Service
 public class CategoryServiceImpl implements ICategoryService {
     private final ICategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
-    public CategoryServiceImpl(ICategoryRepository categoryRepository) {
+    private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl.class);
+
+    public CategoryServiceImpl(ICategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
     }
 
-    // Verificamos si la categoría ya existe en la base de datos
-    @Transactional // Modifica la base de datos
+    @Transactional
     public CategoryResponse save(CategoryRequest categoryRequest) {
-
-        if (categoryRepository.findByName(categoryRequest.getName()).isPresent()) {
-            throw new CategoryAlreadyExistsException(categoryRequest.getName());
+        // Verificar si la categoría ya existe
+        Optional<Category> existingCategory = categoryRepository.findByNameAndIsActiveTrue(categoryRequest.getName());
+        if (existingCategory.isPresent()) {
+            logger.warn("Intento de creación de categoría con nombre ya existente: {}", categoryRequest.getName());
+            throw new BadRequestException("La categoría ya existe");
         }
-        Category category = new Category();
-        category.setName(categoryRequest.getName());
-        category.setIsActive(true);
 
-        // Guardando
+        // Crear nueva categoría
+        Category category = categoryMapper.toCategory(categoryRequest);
         Category savedCategory = categoryRepository.save(category);
-        return convertToResponse(savedCategory);
+        logger.info("Categoría creada: {}", savedCategory.getName());
+        // Mapear a DTO
+        return categoryMapper.toCategoryResponse(savedCategory);
     }
 
-    @Transactional  // Modifica la base de datos
+    @Transactional
     @Override
     public void delete(Long id) {
-        // Buscar la categoria en la base de datos
-        Category existingCategory = categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
-// Verificar si tiene productos asociados
-        if (!existingCategory.getProducts().isEmpty()) {
-            throw new CategoryDeletionException(id);
+        Optional<Category> categoryOptional = categoryRepository.findByIdAndIsActiveTrue(id);
+        if (categoryOptional.isEmpty()) {
+            logger.warn("Intento de eliminación de categoría no encontrada con ID: {}", id);
+            throw new NotFoundException("Categoría no encontrada");
         }
-        // Cambiar el estado a inactivo
-        existingCategory.setIsActive(false);
+        // Marcar categoría como inactiva
+        Category category = categoryOptional.get();
 
-        // Guardar los cambios en la base de datos
-        categoryRepository.save(existingCategory);
+        // Verificar si la categoría tiene productos asociados
+        if (category.getProducts() != null && !category.getProducts().isEmpty()) {
+            logger.warn("Intento de eliminación de categoría con productos asociados: {}", category.getName());
+            throw new BadRequestException("No se puede eliminar la categoría porque tiene productos asociados");
+        }
+        logger.info("Categoría eliminada: {}", category.getName());
+        category.setIsActive(false);
+        categoryRepository.save(category);
     }
 
-    @Transactional(readOnly = true)  // Solo lectura
+    @Transactional(readOnly = true)
     @Override
     public CategoryResponse findById(Long id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
-
-        return convertToResponse(category);
+        Optional<Category> categoryOptional = categoryRepository.findByIdAndIsActiveTrue(id);
+        if (categoryOptional.isEmpty()) {
+            logger.warn("Intento de búsqueda de categoría no encontrada con ID: {}", id);
+            throw new NotFoundException("Categoría no encontrada");
+        }
+        // Mapear a DTO
+        logger.info("Categoría encontrada con ID: {}", id);
+        return categoryMapper.toCategoryResponse(categoryOptional.get());
     }
 
-    @Transactional  // Modifica la base de datos
+    @Transactional
     @Override
     public CategoryResponse update(Long id, CategoryRequest categoryRequest) {
-        // Buscar la categoría existente
-        Category existingCategory = categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
-
-        // Verificar si el nuevo nombre ya está en uso por otra categoría
-        Optional<Category> categoryWithSameName = categoryRepository.findByName(categoryRequest.getName());
-        if (categoryWithSameName.isPresent() && !categoryWithSameName.get().getId().equals(id)) {
-            throw new CategoryAlreadyExistsException(categoryRequest.getName());
+        Optional<Category> categoryOptional = categoryRepository.findByIdAndIsActiveTrue(id);
+        if (categoryOptional.isEmpty()) {
+            logger.warn("Intento de actualización de categoría no encontrada con ID: {}", id);
+            throw new NotFoundException("Categoría no encontrada");
         }
 
-        // Actualizar los datos de la categoría
-        existingCategory.setName(categoryRequest.getName());
+        // Verificar si la categoría ya existe
+        Optional<Category> existingCategory = categoryRepository.findByNameAndIsActiveTrue(categoryRequest.getName());
+        if (existingCategory.isPresent() && !existingCategory.get().getId().equals(id)) {
+            logger.warn("Intento de actualización de categoría con nombre ya existente: {}", categoryRequest.getName());
+            throw new BadRequestException("La categoría ya existe");
+        }
 
-        // Guardar cambios en la base de datos
-        Category updatedCategory = categoryRepository.save(existingCategory);
-        return convertToResponse(updatedCategory);
+        // Actualizar categoría
+        Category category = categoryMapper.updateCategory(categoryOptional.get(), categoryRequest);
+        Category updatedCategory = categoryRepository.save(category);
+        logger.info("Categoría actualizada: {}", updatedCategory.getName());
+        // Mapear a DTO
+        return categoryMapper.toCategoryResponse(updatedCategory);
     }
 
-    @Transactional(readOnly = true)  // Solo lectura
+    @Transactional(readOnly = true)
     @Override
     public List<CategoryResponse> findAll() {
-        return categoryRepository.findByIsActiveTrue()
-                .stream()
-                .map(this::convertToResponse)
-                .toList();
+        List<Category> categories = categoryRepository.findAllByIsActiveTrue();
+        if (categories.isEmpty()) {
+            logger.warn("No se encontraron categorías activas");
+            throw new NotFoundException("No se encontraron categorías activas");
+        }
+        logger.info("Número de categorías activas encontradas: {}", categories.size());
+        return categoryMapper.toCategoryResponseList(categories);
     }
 
-    private CategoryResponse convertToResponse(Category category) {
-        return new CategoryResponse(
-                category.getId(),
-                category.getName(),
-                category.getIsActive());
+    @Transactional(readOnly = true)
+    @Override
+    public Page<CategoryResponse> findAllPageable(Pageable pageable) {
+        Page<Category> categoriesPage = categoryRepository.findAllByIsActiveTrue(pageable);
+        if (categoriesPage.isEmpty()) {
+            logger.warn("No se encontraron categorías activas en la paginación");
+            throw new NotFoundException("No se encontraron categorías activas");
+        }
+        logger.info("Número de categorías activas encontradas (paginadas): {}", categoriesPage.getTotalElements());
+        return categoriesPage.map(categoryMapper::toCategoryResponse);
     }
 }
